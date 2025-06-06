@@ -1,3 +1,42 @@
-<script>
-alert("test")
-</script>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>WordPress API 投稿一覧表示</title>
+</head>
+<body>
+  <h1>投稿一覧</h1>
+  <ul id="posts"></ul>
+
+  <script>
+    const apiUrl = "https://public-api.wordpress.com/wp/v2/sites/onosamplesite.wordpress.com/posts";
+
+    async function fetchPosts() {
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const posts = await response.json();
+
+        const postsList = document.getElementById("posts");
+        postsList.innerHTML = ""; // いったんクリア
+
+        posts.forEach(post => {
+          const li = document.createElement("li");
+          // 投稿タイトルとリンク
+          li.innerHTML = `<a href="${post.link}" target="_blank" rel="noopener noreferrer">${post.title.rendered}</a>`;
+          postsList.appendChild(li);
+        });
+
+      } catch (error) {
+        console.error("Fetch error:", error);
+        const postsList = document.getElementById("posts");
+        postsList.innerHTML = `<li>投稿の取得に失敗しました。</li>`;
+      }
+    }
+
+    fetchPosts();
+  </script>
+</body>
+</html>
